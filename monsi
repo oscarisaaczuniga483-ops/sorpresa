@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Monsi ❤️</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: black; font-family: 'Arial', sans-serif; }
+        canvas { display: block; }
+
+        #overlay {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            color: #ff007f; text-align: center; z-index: 10;
+        }
+
+        .countdown { font-size: 100px; font-weight: bold; }
+        .message { font-size: 40px; display: none; text-shadow: 0 0 10px #ff007f; }
+        
+        /* Efecto de las fotos (corazón simple) */
+        #photos { display: none; position: absolute; top: 0; width: 100%; height: 100%; }
+        .photo { width: 100px; height: 100px; border: 3px solid white; position: absolute; }
+    </style>
+</head>
+<body>
+
+    <canvas id="matrix"></canvas>
+
+    <div id="overlay">
+        <div id="number" class="countdown">3</div>
+        <div id="final-msg" class="message">¡FELIZ CUMPLEAÑOS ANITA! 💖</div>
+    </div>
+
+    <script>
+        // --- EFECTO MATRIX ---
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const letters = "ANITAFELIZCUMPLEAÑOS123456789";
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+        const drops = Array(Math.floor(columns)).fill(1);
+
+        function drawMatrix() {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#ff007f"; // Rosa como en el video
+            ctx.font = fontSize + "px monospace";
+
+            drops.forEach((y, i) => {
+                const text = letters.charAt(Math.floor(Math.random() * letters.length));
+                ctx.fillText(text, i * fontSize, y * fontSize);
+                if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            });
+        }
+        setInterval(drawMatrix, 33);
+
+        // --- CUENTA REGRESIVA ---
+        let count = 3;
+        const numElement = document.getElementById('number');
+        const msgElement = document.getElementById('final-msg');
+
+        const interval = setInterval(() => {
+            count--;
+            if (count > 0) {
+                numElement.innerText = count;
+            } else {
+                clearInterval(interval);
+                numElement.style.display = 'none';
+                msgElement.style.display = 'block';
+                // Aquí podrías disparar confeti o música
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
