@@ -117,7 +117,9 @@
     <div class="overlay">
         <button id="start-btn">Para Monsi ❤️</button>
         <div id="countdown" style="display:none">3</div>
-        
+        <div id="welcome-message" style="display:none; position: absolute; z-index: 30; font-size: 3rem; color: white; text-shadow: 0 0 20px #ff007f; text-align: center; width: 100%;">
+    ¡Feliz Cumpleaños, Monsi! ❤️
+</div>
         <div id="booklet-container">
             <div id="message-box">Cargando mensajes...</div>
             <div id="booklet-stack">
@@ -187,19 +189,35 @@
             setTimeout(iniciarCuenta, 3000); // 3 segs de Matrix
         };
 
-        function iniciarCuenta() {
-            canvas.style.opacity = '0';
-            countdown.style.display = 'block';
-            let c = 3;
-            const t = setInterval(() => {
-                c--;
-                if(c > 0) countdown.innerText = c;
-                else {
-                    clearInterval(t); countdown.style.display = 'none';
-                    mostrarLibrito();
-                }
-            }, 1000);
+       function iniciarCuenta() {
+    canvas.style.opacity = '0'; 
+    countdown.style.display = 'block';
+    let c = 3;
+    const t = setInterval(() => {
+        c--;
+        if(c > 0) {
+            countdown.innerText = c;
+        } else {
+            clearInterval(t);
+            countdown.style.display = 'none'; // Quitamos el número
+            
+            // --- AQUÍ APARECE EL TEXTO DE FELICITACIÓN ---
+            const welcome = document.getElementById('welcome-message');
+            welcome.style.display = 'block';
+            
+            setTimeout(() => {
+                welcome.style.opacity = '0';
+                welcome.style.transition = 'opacity 1s';
+                
+                // Después de que se desvanece el texto, sale el librito
+                setTimeout(() => {
+                    welcome.style.display = 'none';
+                    mostrarLibrito(); 
+                }, 1000);
+            }, 2000); // El mensaje se queda 2 segundos en pantalla
         }
+    }, 1000);
+}
 
         // --- LÓGICA DEL LIBRITO INTERACTIVO ---
         let pageCount = 1;
