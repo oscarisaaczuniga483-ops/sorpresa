@@ -18,7 +18,7 @@
         justify-content: center; 
         align-items: center; 
         z-index: 10;
-        pointer-events: none; /* Para que no interfiera con clics */
+        pointer-events: none; 
     }
 
     .countdown { 
@@ -47,16 +47,13 @@
     </div>
 
     <script>
-        // --- EFECTO MATRIX ---
+        
         const canvas = document.getElementById('matrix');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        // --- EL CAMBIO ESTÁ AQUÍ ---
-        // Definimos la frase que queremos que caiga. 
-        // Usamos letras mayúsculas para que se lea mejor en el efecto lluvia.
-        const phrase = "FELIZCUMPLEAÑOSMONSI"; 
+        const phrase = "FELIZCUMPLEAÑOSMONSI💖"; 
         
         const fontSize = 16;
         const columns = canvas.width / fontSize;
@@ -69,21 +66,19 @@
             ctx.font = fontSize + "px monospace";
 
             drops.forEach((y, i) => {
-                // En lugar de elegir una letra aleatoria de un montón,
-                // elegimos la letra que corresponde a la altura 'y' dentro de nuestra frase
-                // Usamos el operador % (módulo) para que la frase se repita infinitamente hacia abajo
+                
                 const text = phrase.charAt(y % phrase.length);
                 
                 ctx.fillText(text, i * fontSize, y * fontSize);
                 
-                // Reiniciamos la gota si llega al final o aleatoriamente para dar variedad
+               
                 if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
                 drops[i]++;
             });
         }
         setInterval(drawMatrix, 33);
 
-        // --- CUENTA REGRESIVA ---
+      
         let count = 3;
         const numElement = document.getElementById('number');
         const msgElement = document.getElementById('final-msg');
@@ -96,13 +91,13 @@
                 clearInterval(interval);
                 numElement.style.display = 'none';
                 msgElement.style.display = 'block';
-                // Efecto de latido en el mensaje final
+                
                 animarMensaje();
             }
         }, 1000);
 
         function animarMensaje() {
-    // Calculamos la escala basada en el tiempo para el efecto de latido
+   
     const escala = 1 + Math.sin(Date.now() / 500) * 0.1;
     msgElement.style.transform = `scale(${escala})`;
     requestAnimationFrame(animarMensaje);
