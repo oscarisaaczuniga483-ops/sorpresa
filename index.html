@@ -107,6 +107,20 @@
             opacity: 0; z-index: 5;
         }
         .final-photo-frame img { width: 100%; height: 100%; object-fit: cover; }
+        #welcome-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100; /* Por encima de la lluvia */
+    font-size: 3.5rem;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 0 20px #ff007f, 0 0 40px #ff007f;
+    text-align: center;
+    width: 90%;
+    display: none;
+}
     </style>
 </head>
 <body>
@@ -189,8 +203,8 @@
             setTimeout(iniciarCuenta, 3000); // 3 segs de Matrix
         };
 
-       function iniciarCuenta() {
-    canvas.style.opacity = '0'; 
+      function iniciarCuenta() {
+    // NO ocultamos el canvas aquí para que siga la lluvia
     countdown.style.display = 'block';
     let c = 3;
     const t = setInterval(() => {
@@ -199,22 +213,27 @@
             countdown.innerText = c;
         } else {
             clearInterval(t);
-            countdown.style.display = 'none'; // Quitamos el número
+            countdown.style.display = 'none';
             
-            // --- AQUÍ APARECE EL TEXTO DE FELICITACIÓN ---
+            // Aparece el mensaje de felicitación SOBRE la lluvia Matrix
             const welcome = document.getElementById('welcome-message');
             welcome.style.display = 'block';
-            
+            welcome.style.opacity = '1';
+
             setTimeout(() => {
+                // Ahora sí, desvanecemos el mensaje y el Matrix juntos
                 welcome.style.opacity = '0';
-                welcome.style.transition = 'opacity 1s';
-                
-                // Después de que se desvanece el texto, sale el librito
+                welcome.style.transition = 'opacity 1.5s';
+                canvas.style.transition = 'opacity 1.5s';
+                canvas.style.opacity = '0';
+
                 setTimeout(() => {
                     welcome.style.display = 'none';
+                    canvas.style.display = 'none';
+                    clearInterval(mInterval); // Detenemos el dibujo de Matrix
                     mostrarLibrito(); 
-                }, 1000);
-            }, 2000); // El mensaje se queda 2 segundos en pantalla
+                }, 1500);
+            }, 3000); // El mensaje dura 3 segundos con la lluvia de fondo
         }
     }, 1000);
 }
