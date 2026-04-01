@@ -2,51 +2,84 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Para Monsi ❤️</title>
     <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: black; font-family: 'Georgia', serif; }
+        /* --- ESTILOS GENERALES Y DE FONDO --- */
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: black; font-family: 'Arial', sans-serif; color: white; }
         canvas { position: absolute; top: 0; left: 0; z-index: 1; }
         #space-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000 url('https://i.imgur.com/Y4M9Z4P.png') repeat; display: none; z-index: 0; }
 
-        .overlay { position: absolute; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; z-index: 10; text-align: center; }
+        .overlay { position: absolute; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10; text-align: center; }
         
-        /* --- ESTILO DEL "LIBRITO" (TARJETA BLANCA) --- */
-        #message-card {
-            background: white;
+        /* --- ESTILO DEL LIBRITO INTERACTIVO (FOTOS Y MENSAJES) --- */
+        #booklet-container {
+            display: none;
             width: 80%;
             max-width: 400px;
-            padding: 40px 20px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(255, 0, 127, 0.3);
-            display: none;
-            transform: translateY(50px);
-            transition: all 1s ease;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Caja de Mensajes Variables (Rosa y Elegante) */
+        #message-box {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            color: #ffe0eb;
+            font-size: 1.4rem;
+            line-height: 1.6;
+            text-shadow: 0 0 10px #ff007f;
+            min-height: 80px;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* Pila de Fotos Interactivas (El "Librito") */
+        #booklet-stack {
             position: relative;
+            width: 100%;
+            height: 300px;
+            cursor: pointer;
+            z-index: 15;
         }
 
-        #message-text {
-            color: #333;
-            font-size: 1.2rem;
-            font-style: italic;
-            min-height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        /* Estilo de cada página del librito */
+        .book-page {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 2px solid white;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 10px 30px rgba(255, 0, 127, 0.3);
+            
+            /* Animación de "pasar página" */
+            transition: transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 1s;
         }
 
-        .heart-icon { color: #ff007f; font-size: 1.5rem; margin-top: 10px; }
+        /* Aseguramos que solo la página de arriba sea visible */
+        .book-page:not(.active) {
+            display: none;
+        }
+
+        .book-page img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Icono de ayuda para que ella sepa qué hacer */
+        #tap-help { font-size: 0.8rem; color: #ffe0eb; opacity: 0.7; }
 
         /* --- OTROS ELEMENTOS --- */
         #countdown { font-size: 120px; font-weight: bold; color: #ff007f; text-shadow: 0 0 20px #ff007f; z-index: 20; }
         #start-btn { padding: 15px 30px; font-size: 20px; background: #ff007f; color: white; border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 0 20px #ff007f; z-index: 100; }
 
-        .photo-frame {
+        .final-photo-frame {
             position: absolute; width: 75px; height: 75px; border: 2px solid white; border-radius: 5px; 
             overflow: hidden; box-shadow: 0 0 15px #ff007f; transition: all 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             opacity: 0; z-index: 5;
         }
-        .photo-frame img { width: 100%; height: 100%; object-fit: cover; }
+        .final-photo-frame img { width: 100%; height: 100%; object-fit: cover; }
     </style>
 </head>
 <body>
@@ -57,10 +90,18 @@
         <button id="start-btn">Para Monsi ❤️</button>
         <div id="countdown" style="display:none">3</div>
         
-        <!-- EL LIBRITO / TARJETA -->
-        <div id="message-card">
-            <div id="message-text">Cargando mensajes...</div>
-            <div class="heart-icon">♥</div>
+        <div id="booklet-container">
+            <div id="message-box">Cargando mensajes...</div>
+            <div id="booklet-stack">
+                <div class="book-page active" id="page1"><img src="foto1.jpg"></div>
+                <div class="book-page" id="page2"><img src="foto2.jpg"></div>
+                <div class="book-page" id="page3"><img src="foto3.jpg"></div>
+                <div class="book-page" id="page4"><img src="foto4.jpg"></div>
+                <div class="book-page" id="page5"><img src="foto5.jpg"></div>
+                <div class="book-page" id="page6"><img src="foto6.jpg"></div>
+                <div class="book-page" id="page7"><img src="foto7.jpg"></div>
+            </div>
+            <p id="tap-help">(Toca la foto para pasar página y leer)</p>
         </div>
     </div>
 
@@ -69,27 +110,29 @@
     <div id="heart-container"></div>
 
     <script>
-        // CONFIGURACIÓN DE MENSAJES QUE CAMBIAN
-        const mensajes = [
-            "Hola, mi amor...",
-            "Hoy es un día muy especial.",
-            "Tengo una pequeña sorpresa para ti.",
-            "Gracias por cada sonrisa...",
-            "Y por ser la persona increíble que eres.",
-            "As long as you're smiling, I'm happy.",
-            "Stay happy, my love.",
-            "¡Feliz Cumpleaños, Monsi! ❤️"
+        // CONFIGURACIÓN DE MENSAJES QUE CAMBIAN (puedes editar estos textos)
+        // He puesto 7 mensajes, uno para cada una de las 7 fotos del librito.
+        const mensajesMap = [
+            { page: 1, message: "Hola, mi amor... ❤️" },
+            { page: 2, message: "Hoy es un día especial para ti y para mí." },
+            { page: 3, message: "Cada momento contigo es un regalo." },
+            { page: 4, message: "Gracias por tu alegría y tu dulzura." },
+            { page: 5, message: "As long as you're smiling, I'm happy." },
+            { page: 6, message: "Stay happy, my love. 💖" },
+            { page: 7, message: "¡Feliz Cumpleaños, Monsi! ❤️" }
         ];
 
         const btn = document.getElementById('start-btn');
         const audio = document.getElementById('musica');
         const countdown = document.getElementById('countdown');
-        const messageCard = document.getElementById('message-card');
-        const messageText = document.getElementById('message-text');
+        const bookletContainer = document.getElementById('booklet-container');
+        const bookletStack = document.getElementById('booklet-stack');
+        const messageBox = document.getElementById('message-box');
+        const spaceBg = document.getElementById('space-bg');
         const canvas = document.getElementById('matrix');
         const ctx = canvas.getContext('2d');
 
-        // MATRIX LOGIC
+        // Matrix Logic
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         const phrase = "FELIZCUMPLEAÑOSMONSI";
@@ -109,7 +152,7 @@
             btn.style.display = 'none';
             audio.play();
             mInterval = setInterval(drawMatrix, 33);
-            setTimeout(iniciarCuenta, 3000);
+            setTimeout(iniciarCuenta, 3000); // 3 segs de Matrix
         };
 
         function iniciarCuenta() {
@@ -126,22 +169,81 @@
             }, 1000);
         }
 
+        // --- LÓGICA DEL LIBRITO INTERACTIVO ---
+        let pageCount = 1;
         function mostrarLibrito() {
             clearInterval(mInterval);
             canvas.style.display = 'none';
-            document.getElementById('space-bg').style.display = 'block';
-            messageCard.style.display = 'block';
-            setTimeout(() => messageCard.style.transform = "translateY(0)", 100);
+            spaceBg.style.display = 'block';
+            bookletContainer.style.display = 'flex';
+            actualizarMensaje(1);
+        }
 
-            let msgIndex = 0;
-            const msgInterval = setInterval(() => {
-                if (msgIndex < mensajes.length) {
-                    messageText.style.opacity = 0;
-                    setTimeout(() => {
-                        messageText.innerText = mensajes[msgIndex];
-                        messageText.style.opacity = 1;
-                        messageText.style.transition = "opacity 0.5s";
-                        msgIndex++;
-                    }, 500);
-                } else {
-                    clearInterval(msgInterval);
+        function actualizarMensaje(pageIndex) {
+            const entry = mensajesMap.find(item => item.page === pageIndex);
+            if(entry) {
+                messageBox.style.opacity = 0;
+                setTimeout(() => {
+                    messageBox.innerText = entry.message;
+                    messageBox.style.opacity = 1;
+                    messageBox.style.transition = "opacity 0.5s";
+                }, 300);
+            }
+        }
+
+        // Qué pasa cuando Monsi toca el librito
+        bookletStack.onclick = () => {
+            const currentPage = document.getElementById(`page${pageCount}`);
+            
+            if (pageCount < mensajesMap.length) {
+                // Hay más páginas: pasamos página
+                currentPage.classList.remove('active');
+                
+                // Animación de desvanecimiento hacia la izquierda
+                currentPage.style.transform = "translateX(-150px) rotate(-20deg)";
+                currentPage.style.opacity = '0';
+                
+                pageCount++;
+                const nextPage = document.getElementById(`page${pageCount}`);
+                nextPage.classList.add('active');
+                
+                actualizarMensaje(pageCount);
+            } else {
+                // Es la última página: pasamos a la explosión final
+                // Primero ocultamos el librito
+                bookletContainer.style.opacity = '0';
+                bookletContainer.style.transition = 'opacity 1s';
+                setTimeout(() => {
+                    bookletContainer.style.display = 'none';
+                    explocionFinalDeFotos();
+                }, 1000);
+            }
+        };
+
+        function explocionFinalDeFotos() {
+            const container = document.getElementById('heart-container');
+            container.style.display = 'block';
+            const num = 15; // Usamos 15 fotos para el corazón
+
+            for (let i = 1; i <= num; i++) {
+                const f = document.createElement('div');
+                f.className = 'final-photo-frame';
+                f.innerHTML = `<img src="foto${i}.jpg">`;
+                container.appendChild(f);
+
+                const t = (i / num) * 2 * Math.PI;
+                const x = 16 * Math.pow(Math.sin(t), 3);
+                const y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+                const s = Math.min(window.innerWidth, window.innerHeight) * 0.02;
+
+                setTimeout(() => {
+                    f.style.opacity = '1';
+                    f.style.left = (x * s + window.innerWidth/2 - 37) + 'px';
+                    f.style.top = (y * s + window.innerHeight/2 - 37) + 'px';
+                    f.style.transform = `rotate(${(Math.random()-0.5)*30}deg)`;
+                }, i * 150);
+            }
+        }
+    </script>
+</body>
+</html>
