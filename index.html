@@ -5,75 +5,62 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Para Monsi ❤️</title>
     <style>
-        /* --- ESTILOS GENERALES --- */
-        body, html {
-            margin: 0; padding: 0; width: 100%; height: 100%;
-            overflow: hidden; background-color: black;
-            font-family: 'Arial', sans-serif; color: white;
-        }
-
-        /* --- CAPAS DE FONDO --- */
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: black; font-family: 'Georgia', serif; }
         canvas { position: absolute; top: 0; left: 0; z-index: 1; }
+        #space-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000 url('https://i.imgur.com/Y4M9Z4P.png') repeat; display: none; z-index: 0; }
+
+        .overlay { position: absolute; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; z-index: 10; text-align: center; }
         
-        #space-bg {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000 url('https://i.imgur.com/Y4M9Z4P.png') repeat;
-            display: none; z-index: 0;
+        /* --- ESTILO DEL "LIBRITO" (TARJETA BLANCA) --- */
+        #message-card {
+            background: white;
+            width: 80%;
+            max-width: 400px;
+            padding: 40px 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(255, 0, 127, 0.3);
+            display: none;
+            transform: translateY(50px);
+            transition: all 1s ease;
+            position: relative;
         }
 
-        /* --- CONTENEDORES DE TEXTO --- */
-        .overlay {
-            position: absolute; width: 100%; height: 100%;
-            display: flex; justify-content: center; align-items: center;
-            z-index: 10; text-align: center;
+        #message-text {
+            color: #333;
+            font-size: 1.2rem;
+            font-style: italic;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        #countdown { font-size: 120px; font-weight: bold; color: #ff007f; text-shadow: 0 0 20px #ff007f; }
+        .heart-icon { color: #ff007f; font-size: 1.5rem; margin-top: 10px; }
 
-        #love-card {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 30px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(8px); display: none; max-width: 80%;
-            box-shadow: 0 0 20px rgba(255, 0, 127, 0.2);
-        }
-
-        .love-text { font-size: 1.4rem; line-height: 1.6; color: #ffe0eb; margin: 0; }
-
-        /* --- FOTOS EN CORAZÓN --- */
-        #heart-container { position: absolute; width: 100%; height: 100%; display: none; z-index: 5; }
+        /* --- OTROS ELEMENTOS --- */
+        #countdown { font-size: 120px; font-weight: bold; color: #ff007f; text-shadow: 0 0 20px #ff007f; z-index: 20; }
+        #start-btn { padding: 15px 30px; font-size: 20px; background: #ff007f; color: white; border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 0 20px #ff007f; z-index: 100; }
 
         .photo-frame {
-            position: absolute; width: 70px; height: 70px;
-            border: 2px solid white; border-radius: 5px; overflow: hidden;
-            box-shadow: 0 0 15px #ff007f, 0 0 25px #ff007f;
-            transition: all 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            opacity: 0; background: white;
+            position: absolute; width: 75px; height: 75px; border: 2px solid white; border-radius: 5px; 
+            overflow: hidden; box-shadow: 0 0 15px #ff007f; transition: all 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0; z-index: 5;
         }
-
         .photo-frame img { width: 100%; height: 100%; object-fit: cover; }
-
-        /* Botón inicial (necesario para activar música) */
-        #start-btn {
-            padding: 15px 30px; font-size: 20px; background: #ff007f;
-            color: white; border: none; border-radius: 50px; cursor: pointer;
-            box-shadow: 0 0 20px #ff007f; z-index: 100;
-        }
     </style>
 </head>
 <body>
 
-    <!-- Música -->
     <audio id="musica" loop><source src="musica.mp3" type="audio/mpeg"></audio>
 
-    <div id="ui-layer" class="overlay">
-        <button id="start-btn">Toca aquí, Monsi ❤️</button>
+    <div class="overlay">
+        <button id="start-btn">Para Monsi ❤️</button>
         <div id="countdown" style="display:none">3</div>
-        <div id="love-card">
-            <p class="love-text">
-                "As long as you're smiling, I'm happy.<br>
-                Stay happy, my love.<br>
-                ¡Feliz Cumpleaños, Monsi!"
-            </p>
+        
+        <!-- EL LIBRITO / TARJETA -->
+        <div id="message-card">
+            <div id="message-text">Cargando mensajes...</div>
+            <div class="heart-icon">♥</div>
         </div>
     </div>
 
@@ -82,112 +69,79 @@
     <div id="heart-container"></div>
 
     <script>
+        // CONFIGURACIÓN DE MENSAJES QUE CAMBIAN
+        const mensajes = [
+            "Hola, mi amor...",
+            "Hoy es un día muy especial.",
+            "Tengo una pequeña sorpresa para ti.",
+            "Gracias por cada sonrisa...",
+            "Y por ser la persona increíble que eres.",
+            "As long as you're smiling, I'm happy.",
+            "Stay happy, my love.",
+            "¡Feliz Cumpleaños, Monsi! ❤️"
+        ];
+
         const btn = document.getElementById('start-btn');
         const audio = document.getElementById('musica');
+        const countdown = document.getElementById('countdown');
+        const messageCard = document.getElementById('message-card');
+        const messageText = document.getElementById('message-text');
         const canvas = document.getElementById('matrix');
         const ctx = canvas.getContext('2d');
-        const countdown = document.getElementById('countdown');
-        const loveCard = document.getElementById('love-card');
-        const spaceBg = document.getElementById('space-bg');
-        const heartContainer = document.getElementById('heart-container');
 
-        // 1. CONFIGURACIÓN MATRIX
+        // MATRIX LOGIC
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         const phrase = "FELIZCUMPLEAÑOSMONSI";
-        const fontSize = 16;
-        const columns = canvas.width / fontSize;
-        const drops = Array(Math.floor(columns)).fill(1);
-
+        const drops = Array(Math.floor(canvas.width/16)).fill(1);
         function drawMatrix() {
-            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#ff007f";
-            ctx.font = fontSize + "px monospace";
+            ctx.fillStyle = "rgba(0, 0, 0, 0.05)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#ff007f"; ctx.font = "16px monospace";
             drops.forEach((y, i) => {
-                const text = phrase.charAt(y % phrase.length);
-                ctx.fillText(text, i * fontSize, y * fontSize);
-                if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                ctx.fillText(phrase.charAt(y % phrase.length), i * 16, y * 16);
+                if (y * 16 > canvas.height && Math.random() > 0.975) drops[i] = 0;
                 drops[i]++;
             });
         }
-        let matrixInterval;
+        let mInterval;
 
-        // 2. INICIO DE LA EXPERIENCIA
         btn.onclick = () => {
             btn.style.display = 'none';
             audio.play();
-            matrixInterval = setInterval(drawMatrix, 33);
-            
-            // Iniciar cuenta regresiva tras 4 segundos de Matrix
-            setTimeout(iniciarCuenta, 4000);
+            mInterval = setInterval(drawMatrix, 33);
+            setTimeout(iniciarCuenta, 3000);
         };
 
         function iniciarCuenta() {
             canvas.style.opacity = '0';
-            canvas.style.transition = 'opacity 2s';
             countdown.style.display = 'block';
             let c = 3;
-            const timer = setInterval(() => {
+            const t = setInterval(() => {
                 c--;
                 if(c > 0) countdown.innerText = c;
                 else {
-                    clearInterval(timer);
-                    countdown.style.display = 'none';
-                    mostrarMensajeYFotos();
+                    clearInterval(t); countdown.style.display = 'none';
+                    mostrarLibrito();
                 }
             }, 1000);
         }
 
-        function mostrarMensajeYFotos() {
-            clearInterval(matrixInterval);
+        function mostrarLibrito() {
+            clearInterval(mInterval);
             canvas.style.display = 'none';
-            spaceBg.style.display = 'block';
-            loveCard.style.display = 'block';
-            
-            // Tras 5 segundos de mensaje, formar el corazón
-            setTimeout(() => {
-                loveCard.style.opacity = '0';
-                loveCard.style.transition = 'opacity 1s';
-                setTimeout(() => { 
-                    loveCard.style.display = 'none'; 
-                    crearCorazon(); 
-                }, 1000);
-            }, 5000);
-        }
+            document.getElementById('space-bg').style.display = 'block';
+            messageCard.style.display = 'block';
+            setTimeout(() => messageCard.style.transform = "translateY(0)", 100);
 
-        function crearCorazon() {
-            heartContainer.style.display = 'block';
-            const numFotos = 15; // Asegúrate de tener foto1.jpg hasta foto15.jpg
-            const width = window.innerWidth;
-            const height = window.innerHeight;
-
-            for (let i = 1; i <= numFotos; i++) {
-                const frame = document.createElement('div');
-                frame.className = 'photo-frame';
-                const img = document.createElement('img');
-                img.src = `foto${i}.jpg`;
-                frame.appendChild(img);
-                heartContainer.appendChild(frame);
-
-                // Matemáticas del corazón
-                const t = (i / numFotos) * 2 * Math.PI;
-                const x = 16 * Math.pow(Math.sin(t), 3);
-                const y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
-                
-                const scale = Math.min(width, height) * 0.02;
-                const finalX = (x * scale) + (width / 2) - 35;
-                const finalY = (y * scale) + (height / 2) - 35;
-
-                // Animación
-                setTimeout(() => {
-                    frame.style.opacity = '1';
-                    frame.style.left = finalX + 'px';
-                    frame.style.top = finalY + 'px';
-                    frame.style.transform = `rotate(${(Math.random()-0.5)*20}deg)`;
-                }, i * 200);
-            }
-        }
-    </script>
-</body>
-</html>
+            let msgIndex = 0;
+            const msgInterval = setInterval(() => {
+                if (msgIndex < mensajes.length) {
+                    messageText.style.opacity = 0;
+                    setTimeout(() => {
+                        messageText.innerText = mensajes[msgIndex];
+                        messageText.style.opacity = 1;
+                        messageText.style.transition = "opacity 0.5s";
+                        msgIndex++;
+                    }, 500);
+                } else {
+                    clearInterval(msgInterval);
