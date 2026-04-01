@@ -8,7 +8,34 @@
         /* --- ESTILOS GENERALES Y DE FONDO --- */
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: black; font-family: 'Arial', sans-serif; color: white; }
         canvas { position: absolute; top: 0; left: 0; z-index: 1; }
-        #space-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000 url('https://i.imgur.com/Y4M9Z4P.png') repeat; display: none; z-index: 0; }
+     /* --- NUEVO FONDO ESPACIAL SIN IMÁGENES EXTERNAS --- */
+#space-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Fondo negro con un degradado sutil */
+    background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+    display: none; 
+    z-index: 0;
+}
+
+/* Efecto de estrellas pequeñas usando sombras (No necesita archivos) */
+#space-bg::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 2px;
+    height: 2px;
+    background: transparent;
+    /* Generamos cientos de puntitos blancos en posiciones aleatorias */
+    box-shadow: 200px 300px #FFF, 500px 100px #FFF, 800px 400px #FFF, 
+                150px 600px #FFF, 900px 800px #FFF, 300px 200px #FFF,
+                600px 500px #FFF, 100px 700px #FFF, 400px 900px #FFF,
+                250px 150px #FFF, 750px 350px #FFF, 850px 650px #FFF;
+    opacity: 0.5;
+}
 
         .overlay { position: absolute; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10; text-align: center; }
         
